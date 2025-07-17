@@ -1200,9 +1200,9 @@ session_start();
                     <h3>PHIL ASEAN MOÇAMBIQUE</h3>
                     <p>Seu parceiro confiável em serviços marítimos ao longo da costa moçambicana desde 2010.</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.facebook.com/share/19DV7gvS1T/?mibextid=wwXIfr"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://www.instagram.com/phil_asean?igsh=djZocnQwcDJkMHF1"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
                 <div class="footer-col">
