@@ -37,7 +37,10 @@ $order = [
     'name'      => $input['name'],
     'email'     => $input['email'],
     'service'   => $input['service'],
-    'details'   => $input['details'] ?? [],
+    // garante que details seja sempre um objeto, nunca array
+    'details'   => (isset($input['details']) && is_array($input['details']))
+                   ? (object)$input['details']
+                   : (object)[],
     'createdAt' => new UTCDateTime(),
     'status'    => 'pending'
 ];
