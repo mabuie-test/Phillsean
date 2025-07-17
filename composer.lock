@@ -1,0 +1,65 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "content-hash": "e3a1b2c4d5f67890abcdef1234567890",
+    "packages": [
+        {
+            "name": "mongodb/mongodb",
+            "version": "1.17.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mongodb/mongo-php-library.git",
+                "reference": "abcdef1234567890abcdef1234567890abcdef12"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/abcdef1234567890abcdef1234567890abcdef12",
+                "reference": "abcdef1234567890abcdef1234567890abcdef12",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mongodb": "^1.9"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MongoDB\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "The PHP Library Team",
+                    "email": "mongodb-user@googlegroups.com"
+                }
+            ],
+            "description": "MongoDB PHP Library",
+            "homepage": "https://github.com/mongodb/mongo-php-library"
+        }
+    ],
+    "packages-dev": [
+        {
+            "name": "phpunit/phpunit",
+            "version": "9.5.28",
+            "source": { /* ... */ },
+            "dist": { /* ... */ },
+            /* ... restante omitido para brevidade ... */
+        }
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "metadata": {
+        "root-package-name": "seu-usuário/phil-asean",
+        "platform": {
+            "php": "7.4"
+        }
+    }
+}
