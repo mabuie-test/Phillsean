@@ -946,7 +946,7 @@ session_start();
           <input type="password" id="reg-password"
             class="auth-form-control" required>
         </div>
-        <button id="register-btn" class="btn">Registrar</button>
+        <button id="register-btn" class="btn">Registar</button>
         <p class="auth-form-footer">
           Já tem conta? <a href="#" id="switch-to-login">Entre</a>
         </p>
