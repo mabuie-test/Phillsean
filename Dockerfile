@@ -1,12 +1,13 @@
 FROM php:8.1-apache
 
-# 1) Instala pacotes de sistema e certificados
+# 1) Instala pacotes de sistema e certificados (inclui libonig-dev)
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
       git \
       curl \
       zip \
       libzip-dev \
+      libonig-dev \
       libssl-dev \
       libsasl2-dev \
       zlib1g-dev \
@@ -19,7 +20,7 @@ RUN apt-get update && \
     update-ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# 2) Instala extensões PHP: mongodb (versão mais recente), zip, mbstring, opcache
+# 2) Instala extensões PHP: mongodb, zip, mbstring, opcache
 RUN pecl install mongodb && \
     docker-php-ext-enable mongodb && \
     docker-php-ext-install zip mbstring && \
@@ -38,7 +39,7 @@ RUN composer install --no-dev --optimize-autoloader
 # 5) Habilita mod_rewrite (se usar .htaccess)
 RUN a2enmod rewrite
 
-# 6) Ajuste de permissões (para invoices/)
+# 6) Prepara diretório de faturas
 RUN mkdir -p invoices && chown -R www-data:www-data invoices
 
 # 7) Exponha e rode
