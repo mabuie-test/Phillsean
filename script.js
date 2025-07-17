@@ -28,24 +28,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnNavRegister = document.getElementById('register-btn-nav');
   const closeAuthBtn   = document.getElementById('close-auth-modal');
 
-  console.log('Auth elements:', {
-    authModal, loginForm, registerForm,
-    btnNavLogin, btnNavRegister,
-    document.getElementById('register-btn'),
-    document.getElementById('login-btn')
-  });
-
-  // Abre modal
+  // Abre modal em modo Login
   btnNavLogin?.addEventListener('click', e => {
     e.preventDefault();
     authModal.style.display = 'flex';
     showLoginForm();
   });
+
+  // Abre modal em modo Registrar
   btnNavRegister?.addEventListener('click', e => {
     e.preventDefault();
     authModal.style.display = 'flex';
     showRegisterForm();
   });
+
+  // Fecha modal
   closeAuthBtn?.addEventListener('click', () => {
     authModal.style.display = 'none';
   });
@@ -53,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === authModal) authModal.style.display = 'none';
   });
 
+  // Troca abas
   loginTab?.addEventListener('click', showLoginForm);
   registerTab?.addEventListener('click', showRegisterForm);
 
@@ -69,9 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.style.display    = 'none';
   }
 
-  // GENERIC AJAX HANDLER
+  // AJAX Generic
   function handleFetch(endpoint, payload, onSuccess) {
-    console.log(`Fetch ${endpoint}`, payload);
     fetch(endpoint, {
       method:  'POST',
       headers: {'Content-Type':'application/json'},
@@ -87,21 +84,18 @@ document.addEventListener('DOMContentLoaded', () => {
       return response.json();
     })
     .then(json => {
-      console.log(`${endpoint} resposta:`, json);
       alert(json.message);
       if (json.success) onSuccess();
     })
     .catch(err => {
-      console.error(`Falha ao conectar com ${endpoint}:`, err);
       alert(`Falha ao conectar com ${endpoint}:\n${err.message}`);
     });
   }
 
-  // REGISTER
-  const registerBtn = document.getElementById('register-btn');
-  registerBtn?.addEventListener('click', e => {
+  // REGISTER via AJAX
+  const registerSubmit = document.getElementById('register-submit-btn');
+  registerSubmit?.addEventListener('click', e => {
     e.preventDefault();
-    console.log('Clicou registrar');
     handleFetch('register.php', {
       name:     document.getElementById('reg-name').value.trim(),
       email:    document.getElementById('reg-email').value.trim(),
@@ -109,26 +103,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }, showLoginForm);
   });
 
-  // LOGIN
-  const loginBtn = document.getElementById('login-btn');
-  loginBtn?.addEventListener('click', e => {
+  // LOGIN via AJAX
+  const loginSubmit = document.getElementById('login-submit-btn');
+  loginSubmit?.addEventListener('click', e => {
     e.preventDefault();
-    console.log('Clicou login');
     handleFetch('login.php', {
       email:    document.getElementById('login-email').value.trim(),
       password: document.getElementById('login-password').value
     }, () => window.location.reload());
   });
 
-  // LOGOUT
+  // LOGOUT via AJAX
   const logoutBtn = document.getElementById('logout-btn');
   logoutBtn?.addEventListener('click', e => {
     e.preventDefault();
-    console.log('Clicou logout');
     handleFetch('logout.php', {}, () => window.location = 'index.php');
   });
 
-  // SERVICE ORDER via AJAX (mantido igual)
+  // SERVICE ORDER via AJAX
   const orderForm = document.getElementById('service-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', e => {
@@ -157,10 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fm.innerHTML = `<i class="fas fa-${js.success?'check-circle':'exclamation-circle'}"></i> ${js.message}`;
         if (js.success) orderForm.reset();
       })
-      .catch(err => {
-        console.error('Erro no send_email:', err);
-        alert('Erro ao enviar a solicitação.');
-      });
+      .catch(() => alert('Erro ao enviar a solicitação.'));
     });
   }
 });
