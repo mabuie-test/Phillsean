@@ -1,0 +1,14 @@
+{
+    "name": "seu-usuário/phil-asean",
+    "description": "Backend PHP com MongoDB Atlas para PHIL ASEAN Provider & Logistics",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "mongodb/mongodb": "^1.17"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
