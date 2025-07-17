@@ -1,5 +1,3 @@
-// Mr salafo no $uri temos que colocar a uri do mongodbatlas
-
 <?php
 require __DIR__ . '/vendor/autoload.php';
 use MongoDB\Client;
