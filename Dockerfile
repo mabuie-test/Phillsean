@@ -3,25 +3,15 @@ FROM php:8.1-apache
 # 1) Instala pacotes de sistema e certificados (inclui libonig-dev)
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
-      git \
-      curl \
-      zip \
-      libzip-dev \
-      libonig-dev \
-      libssl-dev \
-      libsasl2-dev \
-      zlib1g-dev \
-      libcurl4-openssl-dev \
-      pkg-config \
-      make \
-      autoconf \
-      g++ \
-      ca-certificates && \
+      git curl zip libzip-dev libonig-dev \
+      libssl-dev libsasl2-dev zlib1g-dev \
+      libcurl4-openssl-dev pkg-config \
+      make autoconf g++ ca-certificates && \
     update-ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# 2) Instala extensões PHP: mongodb, zip, mbstring, opcache
-RUN pecl install mongodb && \
+# 2) Instala extensões PHP com driver MongoDB 1.21.0
+RUN pecl install mongodb-1.21.0 && \
     docker-php-ext-enable mongodb && \
     docker-php-ext-install zip mbstring && \
     docker-php-ext-enable opcache
