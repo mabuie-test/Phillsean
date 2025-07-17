@@ -12,6 +12,8 @@ RUN apt-get update && \
       make \
       autoconf \
       g++
+      ca-certificates && \
+     update-ca-certificates
 
 # Instala versão 1.20.0 da extensão C do MongoDB (compatível com mongodb/mongodb:^1.20)
 RUN pecl install mongodb-1.20.0 && \
