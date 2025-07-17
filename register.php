@@ -1,77 +1,73 @@
 <?php
-// register.php — debug de stages
+// register.php
 
+// 1) Inicia buffer e desativa exibição de erros no output
+ob_start();
 ini_set('display_errors', 0);
 error_reporting(0);
-ob_start();
+
+// 2) Header JSON
 header('Content-Type: application/json; charset=utf-8');
 
-$response = ['stage' => 'start'];
+// 3) Sessão
+session_start();
 
-try {
-    // Stage 1: método
-    $response['stage'] = 'method-check';
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        throw new Exception('Método não permitido');
-    }
+// 4) Autoload Composer e conexão Mongo
+require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/mongo_conn.php';
 
-    // Stage 2: ler raw JSON
-    $response['stage'] = 'read-json';
-    $raw  = file_get_contents('php://input');
-    $data = json_decode($raw, true);
-    $response['raw'] = $raw;
-    $response['decoded'] = $data;
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception('JSON inválido: ' . json_last_error_msg());
-    }
-
-    // Stage 3: validações
-    $response['stage'] = 'validation';
-    if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
-        throw new Exception('Campos faltando');
-    }
-    if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-        throw new Exception('Email inválido');
-    }
-
-    // Stage 4: conexão Mongo
-    $response['stage'] = 'mongo-connect';
-    require __DIR__ . '/vendor/autoload.php';
-    require __DIR__ . '/mongo_conn.php';
-    $users = getMongoCollection('users');
-    if (!$users) {
-        throw new Exception('Falha ao obter coleção users');
-    }
-
-    // Stage 5: duplicado
-    $response['stage'] = 'check-duplicate';
-    if ($users->findOne(['email' => $data['email']])) {
-        throw new Exception('Email já em uso');
-    }
-
-    // Stage 6: insert
-    $response['stage'] = 'insert';
-    $hash = password_hash($data['password'], PASSWORD_BCRYPT);
-    $res  = $users->insertOne([
-        'name'      => $data['name'],
-        'email'     => $data['email'],
-        'password'  => $hash,
-        'createdAt' => new MongoDB\BSON\UTCDateTime()
-    ]);
-    $response['insertedCount'] = $res->getInsertedCount();
-
-    // Stage 7: sucesso
-    $response['stage'] = 'success';
-    $response['success'] = true;
-    $response['message'] = 'Registro realizado com sucesso!';
-} catch (Throwable $e) {
-    $response['stage'] = 'error';
-    $response['success'] = false;
-    $response['message'] = $e->getMessage();
-    $response['exceptionFile'] = $e->getFile() . ':' . $e->getLine();
+// 5) Apenas POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    ob_clean();
+    echo json_encode(['success' => false, 'message' => 'Este endpoint aceita apenas POST.']);
+    exit;
 }
 
-// Limpa buffer e retorna JSON
+// 6) Lê e decodifica o corpo JSON
+$raw  = file_get_contents('php://input');
+$data = json_decode($raw, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    ob_clean();
+    echo json_encode(['success' => false, 'message' => 'JSON inválido: ' . json_last_error_msg()]);
+    exit;
+}
+
+// 7) Valida campos obrigatórios
+if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
+    ob_clean();
+    echo json_encode(['success' => false, 'message' => 'Todos os campos são obrigatórios.']);
+    exit;
+}
+if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+    ob_clean();
+    echo json_encode(['success' => false, 'message' => 'Por favor, insira um email válido.']);
+    exit;
+}
+
+// 8) Conecta à coleção users
+$users = getMongoCollection('users');
+
+// 9) Verifica duplicado
+if ($users->findOne(['email' => $data['email']])) {
+    ob_clean();
+    echo json_encode(['success' => false, 'message' => 'Este email já está em uso.']);
+    exit;
+}
+
+// 10) Insere novo usuário
+$hash = password_hash($data['password'], PASSWORD_BCRYPT);
+$res  = $users->insertOne([
+    'name'      => $data['name'],
+    'email'     => $data['email'],
+    'password'  => $hash,
+    'createdAt' => new MongoDB\BSON\UTCDateTime()
+]);
+
+// 11) Retorna resultado
 ob_clean();
-echo json_encode($response, JSON_PRETTY_PRINT);
+if ($res->getInsertedCount() === 1) {
+    echo json_encode(['success' => true, 'message' => 'Registro realizado com sucesso!']);
+} else {
+    echo json_encode(['success' => false, 'message' => 'Ocorreu um erro ao registrar.']);
+}
 exit;
