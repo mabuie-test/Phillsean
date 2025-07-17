@@ -1,34 +1,25 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-header('Content-Type: application/json');
+// register.php — mesma lógica de buffer + JSON apenas
+
+ini_set('display_errors', 0);
+error_reporting(0);
+
+if (ob_get_length()) {
+    ob_clean();
+}
+
+header('Content-Type: application/json; charset=utf-8');
+session_start();
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/mongo_conn.php';
 
-// Inicia a sessão apenas aqui
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
-
-$method = $_SERVER['REQUEST_METHOD'];
-if ($method === 'GET') {
-    // Acesso via navegador
-    echo json_encode([
-        'success' => false,
-        'message' => 'Este endpoint aceita apenas POST. Use uma requisição AJAX ou cliente REST.' 
-    ]);
-    exit;
-}
-if ($method !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success'=>false,'message'=>'Método não permitido']);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(['success'=>false,'message'=>'Este endpoint aceita apenas POST.']);
     exit;
 }
 
 $data = json_decode(file_get_contents('php://input'), true);
-
-// validações...
 if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
     echo json_encode(['success'=>false,'message'=>'Todos os campos são obrigatórios.']);
     exit;
@@ -46,10 +37,10 @@ if ($users->findOne(['email' => $data['email']])) {
 
 $hash = password_hash($data['password'], PASSWORD_BCRYPT);
 $res  = $users->insertOne([
-    'name'      => $data['name'],
-    'email'     => $data['email'],
-    'password'  => $hash,
-    'createdAt' => new MongoDB\BSON\UTCDateTime()
+    'name'=>$data['name'],
+    'email'=>$data['email'],
+    'password'=>$hash,
+    'createdAt'=>new MongoDB\BSON\UTCDateTime()
 ]);
 
 if ($res->getInsertedCount() === 1) {
