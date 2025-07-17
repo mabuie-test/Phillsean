@@ -987,7 +987,11 @@ session_start();
                     <div class="service-content">
                         <h3>Tubos hidráulicos</h3>
                         <p>Fornecemos tubos hidráulicos de alta resistência, ideais para aplicações marítimas e industriais, além de serviços especializados em reparação e manutenção.</p>
-                        <a href="#order" class="btn">Solicitar</a>
+                           <button type="button"
+            class="btn request-btn"
+            data-service="tubes">
+      Solicitar
+    </button>
                     </div>
                 </div>
                 <div class="service-card">
@@ -996,8 +1000,16 @@ session_start();
                     </div>
                     <div class="service-content">
                         <h3>Fornecimento de Água Potável</h3>
-                        <p>Água limpa para consumo entregue em sua embarcação em conformidade com os regulamentos de saúde moçambicanos e padrões internacionais.</p>
-                        <a href="#order" class="btn">Solicitar</a>
+                        <p>Água Potável para consumo entregue em sua embarcação em conformidade com os regulamentos de saúde moçambicanos e padrões internacionais.</p>
+
+
+    <button type="button"
+            class="btn request-btn"
+            data-service="water">
+      Solicitar
+    </button>
+
+                      
                     </div>
                 </div>
                 <div class="service-card">
@@ -1007,7 +1019,11 @@ session_start();
                     <div class="service-content">
                         <h3>Garbage Collector</h3>
                         <p>Realizamos a coleta e o manejo adequado de resíduos sólidos e líquidos gerados a bordo de navios, seguindo rigorosamente as normas ambientais nacionais e internacionais.</p>
-                        <a href="#order" class="btn">Solicitar</a>
+                            <button type="button"
+            class="btn request-btn"
+            data-service="garbage">
+      Solicitar
+    </button>
                     </div>
                 </div>
                 <div class="service-card">
@@ -1017,11 +1033,16 @@ session_start();
                     <div class="service-content">
                         <h3>Provisões e Mantimentos</h3>
                         <p>Provisões frescas, mantimentos secos e itens vinculados entregues em sua embarcação em conformidade com as alfândegas moçambicanas.</p>
-                        
+                            <button type="button"
+            class="btn request-btn"
+            data-service="provisions">
+      Solicitar
+                            </button>
                         <div class="fruit-gallery">
                             <div class="fruit-item">
                                 <img src="1.jpeg" alt="Frutas Frescas 1">
                             </div>
+                          
                             <div class="fruit-item">
                                 <img src="2.jpeg" alt="Frutas Frescas 2">
                             </div>
@@ -1043,7 +1064,11 @@ session_start();
                     <div class="service-content">
                         <h3>Lubrificantes Marítimos</h3>
                         <p>Fornecemos lubrificantes marítimos de alta qualidade, desenvolvidos para atender às demandas específicas de embarcações e motores marinhos.</p>
-                        <a href="#order" class="btn">Solicitar</a>
+                            <button type="button"
+            class="btn request-btn"
+            data-service="lubricants">
+      Solicitar
+                            </button>
                     </div>
                 </div>
                 <div class="service-card">
@@ -1053,7 +1078,11 @@ session_start();
                     <div class="service-content">
                         <h3>Transporte em Offshore</h3>
                         <p>Nós oferecemos serviços completos de transporte em operações offshore, garantindo segurança, agilidade e eficiência em todas as etapas.</p>
-                        <a href="#order" class="btn">Solicitar</a>
+                        <button type="button"
+            class="btn request-btn"
+            data-service="offshore">
+      Solicitar
+                        </button>
                     </div>
                 </div>
             </div>
