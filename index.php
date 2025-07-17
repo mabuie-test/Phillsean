@@ -926,7 +926,8 @@ session_start();
           <input type="password" id="login-password"
             class="auth-form-control" required>
         </div>
-        <button id="login-btn" class="btn">Entrar</button>
+        <!-- depois -->
+<button id="login-submit-btn" class="btn">Entrar</button>
         <p class="auth-form-footer">
           Ainda não tem conta? <a href="#" id="switch-to-register">Registre‑se</a>
         </p>
@@ -946,7 +947,9 @@ session_start();
           <input type="password" id="reg-password"
             class="auth-form-control" required>
         </div>
-        <button id="register-btn" class="btn">Registar</button>
+        <!-- depois -->
+<button id="register-submit-btn" class="btn">Registrar</button>
+
         <p class="auth-form-footer">
           Já tem conta? <a href="#" id="switch-to-login">Entre</a>
         </p>
