@@ -1,8 +1,9 @@
 FROM php:8.1-apache
 
-# Instala dependências de compilação
+# 1. Instala dependências de compilação + git
 RUN apt-get update && \
     apt-get install -y \
+      git \                     # ← adiciona o Git
       libssl-dev \
       libsasl2-dev \
       zlib1g-dev \
@@ -12,17 +13,21 @@ RUN apt-get update && \
       autoconf \
       g++
 
-# Instala versão 1.20.0 da extensão C do MongoDB (compatível com mongodb/mongodb:^1.20)
+# 2. Instala versão 1.20.0 da extensão MongoDB via PECL
 RUN pecl install mongodb-1.20.0 && \
     docker-php-ext-enable mongodb
 
-# Instala o Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+# 3. Instala o Composer e permite rodar como root
+ENV COMPOSER_ALLOW_SUPERUSER=1      # ← permite execução como root
+RUN curl -sS https://getcomposer.org/installer | php \
+    -- --install-dir=/usr/bin --filename=composer
 
 WORKDIR /var/www/html
+
+# 4. Copia o código da aplicação
 COPY . /var/www/html
 
-# Instala dependências PHP via Composer
+# 5. Instala dependências PHP via Composer (agora com git disponível)
 RUN composer install --no-dev --optimize-autoloader
 
 EXPOSE 80
