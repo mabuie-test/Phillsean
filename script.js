@@ -28,21 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnNavRegister = document.getElementById('register-btn-nav');
   const closeAuthBtn   = document.getElementById('close-auth-modal');
 
-  // Abre modal em modo Login
   btnNavLogin?.addEventListener('click', e => {
     e.preventDefault();
     authModal.style.display = 'flex';
     showLoginForm();
   });
-
-  // Abre modal em modo Registrar
   btnNavRegister?.addEventListener('click', e => {
     e.preventDefault();
     authModal.style.display = 'flex';
     showRegisterForm();
   });
-
-  // Fecha modal
   closeAuthBtn?.addEventListener('click', () => {
     authModal.style.display = 'none';
   });
@@ -50,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === authModal) authModal.style.display = 'none';
   });
 
-  // Troca abas
   loginTab?.addEventListener('click', showLoginForm);
   registerTab?.addEventListener('click', showRegisterForm);
 
@@ -67,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.style.display    = 'none';
   }
 
-  // AJAX Generic
+  // AJAX generic handler
   function handleFetch(endpoint, payload, onSuccess) {
     fetch(endpoint, {
       method:  'POST',
@@ -85,7 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(json => {
       alert(json.message);
-      if (json.success) onSuccess();
+      if (json.success && typeof onSuccess === 'function') {
+        onSuccess(json);
+      }
     })
     .catch(err => {
       alert(`Falha ao conectar com ${endpoint}:\n${err.message}`);
@@ -93,8 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // REGISTER via AJAX
-  const registerSubmit = document.getElementById('register-submit-btn');
-  registerSubmit?.addEventListener('click', e => {
+  document.getElementById('register-submit-btn')?.addEventListener('click', e => {
     e.preventDefault();
     handleFetch('register.php', {
       name:     document.getElementById('reg-name').value.trim(),
@@ -104,8 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // LOGIN via AJAX
-  const loginSubmit = document.getElementById('login-submit-btn');
-  loginSubmit?.addEventListener('click', e => {
+  document.getElementById('login-submit-btn')?.addEventListener('click', e => {
     e.preventDefault();
     handleFetch('login.php', {
       email:    document.getElementById('login-email').value.trim(),
@@ -114,42 +108,55 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // LOGOUT via AJAX
-  const logoutBtn = document.getElementById('logout-btn');
-  logoutBtn?.addEventListener('click', e => {
+  document.getElementById('logout-btn')?.addEventListener('click', e => {
     e.preventDefault();
     handleFetch('logout.php', {}, () => window.location = 'index.php');
   });
 
-  // SERVICE ORDER via AJAX
+  // SERVICE ORDER via AJAX (form)
   const orderForm = document.getElementById('service-order-form');
   if (orderForm) {
     orderForm.addEventListener('submit', e => {
       e.preventDefault();
       const data = {
+        service:  document.getElementById('service').value || '',
         name:     document.getElementById('name').value,
-        company:  document.getElementById('company').value,
         email:    document.getElementById('email').value,
-        phone:    document.getElementById('phone')?.value || '',
-        vessel:   document.getElementById('vessel')?.value || '',
-        port:     document.getElementById('port')?.value || '',
-        date:     document.getElementById('date')?.value || '',
-        service:  document.getElementById('service')?.value || '',
-        quantity: document.getElementById('quantity')?.value || '',
-        notes:    document.getElementById('notes')?.value || ''
+        details: {
+          company:  document.getElementById('company').value,
+          phone:    document.getElementById('phone').value,
+          vessel:   document.getElementById('vessel').value,
+          port:     document.getElementById('port').value,
+          date:     document.getElementById('date').value,
+          quantity: document.getElementById('quantity').value,
+          notes:    document.getElementById('notes').value
+        }
       };
-      fetch('send_email.php', {
-        method:  'POST',
-        headers: {'Content-Type':'application/json'},
-        body:    JSON.stringify(data)
-      })
-      .then(r => r.json())
-      .then(js => {
-        const fm = document.getElementById('form-messages');
-        fm.className = js.success ? 'success' : 'error';
-        fm.innerHTML = `<i class="fas fa-${js.success?'check-circle':'exclamation-circle'}"></i> ${js.message}`;
-        if (js.success) orderForm.reset();
-      })
-      .catch(() => alert('Erro ao enviar a solicitação.'));
+      handleFetch('create_order.php', data, () => {
+        // mostra modal de confirmação
+        document.getElementById('order-modal').style.display = 'flex';
+        orderForm.reset();
+      });
     });
   }
+
+  // SERVICE CARD “Solicitar” buttons
+  document.querySelectorAll('.request-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const service = btn.dataset.service;
+      const payload = {
+        service,
+        name:  prompt('Seu nome'),
+        email: prompt('Seu email'),
+        details: {}  // sem detalhes adicionais nesse fluxo
+      };
+      if (!payload.name || !payload.email) {
+        return alert('Nome e email são necessários.');
+      }
+      handleFetch('create_order.php', payload, () => {
+        // após criar, redireciona ao portal ou mostra alerta
+        window.location.href = 'client-portal.php';
+      });
+    });
+  });
 });
