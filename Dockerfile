@@ -2,7 +2,7 @@ FROM php:8.1-apache
 
 # 1) Instala pacotes de sistema e certificados
 RUN apt-get update && \
-    apt-get install -y \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
       git \
       curl \
       zip \
@@ -19,9 +19,8 @@ RUN apt-get update && \
     update-ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# 2) Instalação de extensões PHP necessárias
-#    - mongodb (driver C), zip, mbstring, opcache
-RUN pecl install mongodb-1.20.0 && \
+# 2) Instala extensões PHP: mongodb (versão mais recente), zip, mbstring, opcache
+RUN pecl install mongodb && \
     docker-php-ext-enable mongodb && \
     docker-php-ext-install zip mbstring && \
     docker-php-ext-enable opcache
@@ -31,19 +30,17 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN curl -sS https://getcomposer.org/installer \
     | php -- --install-dir=/usr/bin --filename=composer
 
-# 4) Copia projeto
+# 4) Copia código e instala dependências PHP
 WORKDIR /var/www/html
 COPY . /var/www/html
-
-# 5) Instala dependências PHP definidas no composer.json
 RUN composer install --no-dev --optimize-autoloader
 
-# 6) Habilita mod_rewrite (se precisar de URLs amigáveis)
+# 5) Habilita mod_rewrite (se usar .htaccess)
 RUN a2enmod rewrite
 
-# 7) Ajusta permissões (se necessário para uploads/geração de arquivos)
-RUN chown -R www-data:www-data /var/www/html/invoices
+# 6) Ajuste de permissões (para invoices/)
+RUN mkdir -p invoices && chown -R www-data:www-data invoices
 
-# 8) Exponha a porta 80 e inicie o Apache
+# 7) Exponha e rode
 EXPOSE 80
 CMD ["apache2-foreground"]
