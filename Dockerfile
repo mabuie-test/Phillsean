@@ -1,7 +1,6 @@
-# Dockerfile
 FROM php:8.1-apache
 
-# 1. Instala dependências de sistema para compilar extensões PECL
+# Instala dependências de compilação
 RUN apt-get update && \
     apt-get install -y \
       libssl-dev \
@@ -13,20 +12,18 @@ RUN apt-get update && \
       autoconf \
       g++
 
-# 2. Instala o driver MongoDB via PECL
-RUN pecl install mongodb && \
+# Instala versão 1.20.0 da extensão C do MongoDB (compatível com mongodb/mongodb:^1.20)
+RUN pecl install mongodb-1.20.0 && \
     docker-php-ext-enable mongodb
 
-# 3. Instala o Composer
+# Instala o Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-# 4. Copia o código da aplicação
 WORKDIR /var/www/html
 COPY . /var/www/html
 
-# 5. Instala dependências PHP via Composer
+# Instala dependências PHP via Composer
 RUN composer install --no-dev --optimize-autoloader
 
-# 6. Exponha a porta 80 e inicie o Apache
 EXPOSE 80
 CMD ["apache2-foreground"]
