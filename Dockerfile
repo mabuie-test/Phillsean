@@ -1,6 +1,6 @@
 FROM php:8.1-apache
 
-# Instala dependências de compilação + git
+# Instala dependências de compilação + git + certificados
 RUN apt-get update && \
     apt-get install -y \
       git \
@@ -11,11 +11,11 @@ RUN apt-get update && \
       pkg-config \
       make \
       autoconf \
-      g++
+      g++ \
       ca-certificates && \
-     update-ca-certificates
+    update-ca-certificates
 
-# Instala versão 1.20.0 da extensão C do MongoDB (compatível com mongodb/mongodb:^1.20)
+# Instala versão 1.20.0 da extensão C do MongoDB
 RUN pecl install mongodb-1.20.0 && \
     docker-php-ext-enable mongodb
 
