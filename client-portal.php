@@ -13,6 +13,7 @@ require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/mongo_conn.php';
 
 use MongoDB\BSON\ObjectId;
+use DateTimeZone;
 
 // Carrega dados do usuário logado
 $user = $_SESSION['user'];
@@ -20,16 +21,15 @@ $user = $_SESSION['user'];
 // Conecta na coleção de pedidos
 $ordersCol = getMongoCollection('orders');
 
-// Se for admin, busca todos; senão, só os próprios
+// Define filtro: todos (admin) ou só próprio user
 $filter = [];
 if ($user['role'] !== 'admin') {
     $filter = ['userId' => new ObjectId($user['id'])];
 }
 
-$cursor = $ordersCol->find(
-    $filter,
-    ['sort' => ['createdAt' => -1]]
-);
+// Busca e converte em array
+$cursor  = $ordersCol->find($filter, ['sort' => ['createdAt' => -1]]);
+$orders  = iterator_to_array($cursor, false);
 
 // Função para formatar datas BSON
 function fmtDate($utcDate) {
@@ -48,7 +48,7 @@ function fmtDate($utcDate) {
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <?php include 'header.php'; // seu navbar ?>
+  <?php include 'header.php'; ?>
 
   <main class="container" style="margin-top:120px;">
     <h1>Bem‑vindo, <?= htmlspecialchars($user['name']) ?>!</h1>
@@ -59,41 +59,42 @@ function fmtDate($utcDate) {
       <p>Seus pedidos:</p>
     <?php endif; ?>
 
-    <table class="orders-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Serviço</th>
-          <th>Cliente</th>
-          <th>Email</th>
-          <th>Data</th>
-          <th>Status</th>
-          <th>Fatura</th>
-        </tr>
-      </thead>
-      <tbody>
-      <?php foreach ($cursor as $o): ?>
-        <tr>
-          <td><?= (string)$o['_id'] ?></td>
-          <td><?= htmlspecialchars($o['service']) ?></td>
-          <td><?= htmlspecialchars($o['name']) ?></td>
-          <td><?= htmlspecialchars($o['email']) ?></td>
-          <td><?= fmtDate($o['createdAt']) ?></td>
-          <td><?= htmlspecialchars($o['status']) ?></td>
-          <td>
-            <?php if (!empty($o['invoiceId'])): ?>
-              <a href="invoices/<?= (string)$o['invoiceId'] ?>.pdf" target="_blank">Download</a>
-            <?php else: ?>
-              —
-            <?php endif; ?>
-          </td>
-        </tr>
-      <?php endforeach; ?>
-      <?php if ($cursor->isDead() && $cursor->toArray() === []): // se não houver pedidos ?>
-        <tr><td colspan="7" style="text-align:center;">Nenhum pedido encontrado.</td></tr>
-      <?php endif; ?>
-      </tbody>
-    </table>
+    <?php if (count($orders) === 0): ?>
+      <p><em>Nenhum pedido encontrado.</em></p>
+    <?php else: ?>
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Serviço</th>
+            <th>Cliente</th>
+            <th>Email</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Fatura</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($orders as $o): ?>
+            <tr>
+              <td><?= (string)$o['_id'] ?></td>
+              <td><?= htmlspecialchars($o['service']) ?></td>
+              <td><?= htmlspecialchars($o['name']) ?></td>
+              <td><?= htmlspecialchars($o['email']) ?></td>
+              <td><?= fmtDate($o['createdAt']) ?></td>
+              <td><?= htmlspecialchars($o['status']) ?></td>
+              <td>
+                <?php if (!empty($o['invoiceId'])): ?>
+                  <a href="invoices/<?= (string)$o['invoiceId'] ?>.pdf" target="_blank">Download</a>
+                <?php else: ?>
+                  —
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php endif; ?>
   </main>
 </body>
 </html>
