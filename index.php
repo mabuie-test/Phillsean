@@ -865,7 +865,7 @@ session_start();
 
 
   <!-- HEADER / NAVBAR -->
-  <header>
+    <?php include 'header.php'; ?>
     <div class="container header-container">
       <div class="logo">
         <img src="phil.jpeg" alt="Logo">
@@ -906,7 +906,7 @@ session_start();
         </ul>
       </nav>
     </div>
-  </header>
+  
 
   <!-- AUTENTICAÇÃO (Modal) -->
   <div id="auth-modal" class="auth-modal">
