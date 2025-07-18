@@ -22,7 +22,10 @@ $invoices = getMongoCollection('invoices');
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header><h1>Dashboard de Pedidos (Admin)</h1></header>
+  <?php include 'header.php'; ?>
+
+    
+  <h1>Dashboard de Pedidos (Admin)</h1></header>
   <main class="container" style="padding-top:100px;">
     <table>
       <thead>
